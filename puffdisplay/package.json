@@ -1,0 +1,14 @@
+{
+  "name": "puffdisplay",
+  "version": "1.0.0",
+  "description": "puffin planet project",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^14.0.0-beta.1"
+  }
+}
