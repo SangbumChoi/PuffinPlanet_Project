@@ -562,17 +562,49 @@ let particleMgr = {
 
 		if(curCo2.length > dataMgr.density.co2){
 			for(let i = 0; i < curCo2.length - dataMgr.density.co2; i++){
-				curCo2[i].position.y -= 0;
+				let imsi = curCo2.pop();
+				this.particles = this.particles.filter(item => item != imsi);
+			}
+		} else if(curCo2.length < dataMgr.density.co2){
+			for(let i = 0; i < dataMgr.density.co2 - curCo2.length; i++){
+				let imsi = this.createParticle(particleTypes.co2);
+				imsi.position = {x: random(this.padding + this.size / 2, this.padding + this.width - this.size / 2), y: random(this.padding + this.size / 2, windowHeight - this.padding - this.size / 2)}
+				imsi.velocity = {x: this.size / 200 * random(-1, 1), y: this.size / 200 * random(-1, 1)};
+				imsi.rotation = random(0, 2);
+				imsi.rotationVelocity = random(-0.01, 0.01);
+				this.particles.push(imsi);
 			}
 		}
+
 		if(curChem.length > dataMgr.density.chem){
-			for(let i = 0; i < curChem.length - dataMgr.density.co2; i++){
-				curChem[i].position.y -= 0;
+			for(let i = 0; i < curChem.length - dataMgr.density.chem; i++){
+				let imsi = curChem.pop();
+				this.particles = this.particles.filter(item => item != imsi);
+			}
+		} else if(curChem.length < dataMgr.density.chem){
+			for(let i = 0; i < dataMgr.density.chem - curChem.length; i++){
+				let imsi = this.createParticle(particleTypes.chem);
+				imsi.position = {x: random(this.padding + this.size / 2, this.padding + this.width - this.size / 2), y: random(this.padding + this.size / 2, windowHeight - this.padding - this.size / 2)}
+				imsi.velocity = {x: this.size / 200 * random(-1, 1), y: this.size / 200 * random(-1, 1)};
+				imsi.rotation = random(0, 2);
+				imsi.rotationVelocity = random(-0.01, 0.01);
+				this.particles.push(imsi);
 			}
 		}
+
 		if(curDust.length > dataMgr.density.dust){
-			for(let i = 0; i < curDust.length - dataMgr.density.co2; i++){
-				curDust[i].position.y -= 0;
+			for(let i = 0; i < curDust.length - dataMgr.density.dust; i++){
+				let imsi = curDust.pop();
+				this.particles = this.particles.filter(item => item != imsi);
+			}
+		} else if(curDust.length < dataMgr.density.dust){
+			for(let i = 0; i < dataMgr.density.dust - curDust.length; i++){
+				let imsi = this.createParticle(particleTypes.dust);
+				imsi.position = {x: random(this.padding + this.size / 2, this.padding + this.width - this.size / 2), y: random(this.padding + this.size / 2, windowHeight - this.padding - this.size / 2)}
+				imsi.velocity = {x: this.size / 200 * random(-1, 1), y: this.size / 200 * random(-1, 1)};
+				imsi.rotation = random(0, 2);
+				imsi.rotationVelocity = random(-0.01, 0.01);
+				this.particles.push(imsi);
 			}
 		}
 	}
