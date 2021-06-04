@@ -1,3 +1,5 @@
+const weather = require('./weather');
+
 const particleTypes = {
 	blank : 'blank',
 	co2 : 'co2',
@@ -21,13 +23,13 @@ let appMgr = {
 		if(this.pageIndex >= this.pages.length) this.pageIndex = 0;
 		if(this.pageIndex < 0) this.pageIndex = this.pages.length - 1;
 
-		// console.log(this.pageIndex);
 		this.pages[this.pageIndex].start();
 	},
 
 	initialize(){
 		this.addPage(particleMgr);
 		this.addPage(conditionMgr);
+		this.addPage(outsideMgr);
 		this.pages.forEach(page => {
 			page.start();
 		});
@@ -807,6 +809,26 @@ let standardAnim = {
 			}
 		}
 		return newTime;
+	}
+}
+
+let outsideMgr = {
+	start(){
+		picture_promise = weather.getWeather()
+		picture_promise.then(res => {
+			console.log(res)
+		// 	// img = loadImage(res)
+			img = loadImage('images/test02.jpg');
+		})
+		img = loadImage('images/test02.jpg');
+	},
+
+	draw(){
+		image(img,0,0,windowWidth,windowHeight);
+	},
+	
+	update(){
+
 	}
 }
 
