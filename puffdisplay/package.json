@@ -12,6 +12,7 @@
     "electron": "^14.0.0-beta.1"
   },
   "dependencies": {
+    "node-fetch": "^2.6.1",
     "require": "^2.4.20"
   }
 }

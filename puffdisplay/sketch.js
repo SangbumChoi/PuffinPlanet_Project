@@ -1,4 +1,5 @@
 const weather = require('./weather');
+const puffdata = require('./dataapi');
 
 const particleTypes = {
 	blank : 'blank',
@@ -85,7 +86,7 @@ let appMgr = {
 	}
 }
 
-let dataMgr = {
+var dataMgr = {
 	densityThres: 5,
 	density: {
 		co2: 6,
@@ -96,7 +97,12 @@ let dataMgr = {
 		temperature: 22,
 		humidity: 30
 	},
-	ventil: true
+	realValue:{
+		co2:600,
+		chem:800,
+		dust:1
+	},
+	ventil: 24
 }
 
 let particleMgr = {
@@ -192,7 +198,7 @@ let particleMgr = {
 		textAlign(CENTER, BOTTOM);
 		textSize(windowHeight/3 * 0.2);
 		textStyle(BOLD);
-		text(dataMgr.density.co2, windowHeight/3/2, windowHeight/3 * 0.57);
+		text(dataMgr.realValue.co2, windowHeight/3/2, windowHeight/3 * 0.57);
 		textAlign(CENTER, TOP);
 		textSize(windowHeight/3 * 0.08);
 		textStyle(NORMAL);
@@ -218,7 +224,7 @@ let particleMgr = {
 		textAlign(CENTER, BOTTOM);
 		textSize(windowHeight/3 * 0.2);
 		textStyle(BOLD);
-		text(dataMgr.density.chem, windowHeight/3/2, windowHeight/3 * 1.57);
+		text(dataMgr.realValue.chem, windowHeight/3/2, windowHeight/3 * 1.57);
 		textAlign(CENTER, TOP);
 		textSize(windowHeight/3 * 0.08);
 		textStyle(NORMAL);
@@ -244,7 +250,7 @@ let particleMgr = {
 		textAlign(CENTER, BOTTOM);
 		textSize(windowHeight/3 * 0.2);
 		textStyle(BOLD);
-		text(dataMgr.density.dust, windowHeight/3/2, windowHeight/3 * 2.65);
+		text(dataMgr.realValue.dust, windowHeight/3/2, windowHeight/3 * 2.65);
 		textAlign(CENTER, TOP);
 		textSize(windowHeight/3 * 0.08);
 		textStyle(NORMAL);
@@ -473,33 +479,33 @@ let particleMgr = {
 		let noticeHeight = particleMgr.width * 0.75 * 0.1 * 0.5;
 		let height = noticeHeight / 3;
 
-		if(dataMgr.ventil){
-			height += noticeHeight / 2;
+		// if(dataMgr.ventil){
+		height += noticeHeight / 2;
 
-			stroke(255, 255, 255);
-			strokeWeight(noticeHeight * 0.05);
-			
-			fill(76, 195, 251);
-			rectMode(CENTER);
-			rect(particleMgr.width / 2, height, noticeWidth, noticeHeight, noticeHeight / 2);
+		stroke(255, 255, 255);
+		strokeWeight(noticeHeight * 0.05);
+		
+		fill(76, 195, 251);
+		rectMode(CENTER);
+		rect(particleMgr.width / 2, height, noticeWidth, noticeHeight, noticeHeight / 2);
 
-			noStroke();
-			fill(255, 255, 255);
-			textAlign(CENTER, CENTER);
-			textSize(noticeHeight / 2 * 0.9);
-			text("환기가 진행중입니다", particleMgr.width / 2, height + noticeHeight / 16);
-		}
+		noStroke();
+		fill(255, 255, 255);
+		textAlign(CENTER, CENTER);
+		textSize(noticeHeight / 2 * 0.9);
+		text(dataMgr.ventil.toString() + "만큼 환기가 진행중입니다", particleMgr.width / 2, height + noticeHeight / 16);
+		// }
 
 		noticeWidth = particleMgr.width * 0.75 * 0.25;
 		noticeHeight = particleMgr.width * 0.75 * 0.1 * 0.4;
 
 		if(dataMgr.density.co2 > dataMgr.densityThres){
-			if(dataMgr.ventil) height += noticeHeight + noticeHeight / 5 * 2;
-			else height += noticeHeight / 2;
+			/*if(dataMgr.ventil)*/ height += noticeHeight + noticeHeight / 5 * 2;
+			// else height += noticeHeight / 2;
 
 			stroke(255, 255, 255);
 			strokeWeight(noticeHeight * 0.05);
-			if(particleMgr.selected == particleTypes.co2 || (!dataMgr.ventil && particleMgr.selected == particleTypes.blank)){
+			if(particleMgr.selected == particleTypes.co2/* || (!dataMgr.ventil && particleMgr.selected == particleTypes.blank)*/){
 				fill(141, 142, 159);
 			} else {
 				fill(141, 142, 159, 48);
@@ -520,7 +526,7 @@ let particleMgr = {
 			stroke(255, 255, 255);
 			strokeWeight(noticeHeight * 0.05);
 			
-			if(particleMgr.selected == particleTypes.chem || (!dataMgr.ventil && particleMgr.selected == particleTypes.blank)){
+			if(particleMgr.selected == particleTypes.chem/* || (!dataMgr.ventil && particleMgr.selected == particleTypes.blank)*/){
 				fill(21, 194, 134);
 			} else {
 				fill(21, 194, 134, 48);
@@ -541,7 +547,7 @@ let particleMgr = {
 			stroke(255, 255, 255);
 			strokeWeight(noticeHeight * 0.05);
 			
-			if(particleMgr.selected == particleTypes.dust || (!dataMgr.ventil && particleMgr.selected == particleTypes.blank)){
+			if(particleMgr.selected == particleTypes.dust/* || (!dataMgr.ventil && particleMgr.selected == particleTypes.blank)*/){
 				fill(255, 181, 50);
 			} else {
 				fill(255, 181, 50, 48);
@@ -833,12 +839,36 @@ let outsideMgr = {
 }
 
 function setup (){
-  createCanvas(windowWidth, windowHeight);
-  appMgr.initialize();
-  standardAnim.initialize();
+	createCanvas(windowWidth, windowHeight);
+	setInterval(refreshServer, 10000);
+	appMgr.initialize();
+	standardAnim.initialize();
 }
 
-function draw(){
+async function refreshServer() {
+	indoorData = await puffdata.getPuffData()
+	ventData = await puffdata.getVentLevelData()
+
+	dataMgr.density.co2 = ~~(indoorData.co2 / 100)
+	dataMgr.density.chem = ~~(indoorData.voc / 100)
+	dataMgr.density.dust = indoorData.pm25
+
+	dataMgr.realValue.co2 = indoorData.co2
+	dataMgr.realValue.chem = indoorData.voc
+	dataMgr.realValue.dust = indoorData.pm25
+
+	dataMgr.condition.temperature = indoorData.temp.toFixed(1)
+	dataMgr.condition.humidity = indoorData.humid.toFixed(1)
+
+	dataMgr.ventil = ventData
+}
+
+var first = true
+async function draw(){
+	if (first){
+		await refreshServer();
+		first = false;
+	}
 	background(255);
 	appMgr.update();
 	appMgr.draw();
