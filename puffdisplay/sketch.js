@@ -134,11 +134,12 @@ let particleMgr = {
 			}
 		}
 		initialPos.sort((a, b) => 0.5 - Math.random());
-
+		// velocity factor for framerate
+		velocity_factor = 4
 		for(let i = 0; i < dataMgr.density.co2; i++){
 			let imsi = this.createParticle(particleTypes.co2);
 			imsi.position = initialPos.pop();
-			imsi.velocity = {x: this.size / 200 * random(-1, 1), y: this.size / 200 * random(-1, 1)};
+			imsi.velocity = {x: this.size / 200 * random(-1, 1) * velocity_factor, y: this.size / 200 * random(-1, 1) * velocity_factor};
 			imsi.rotation = random(0, 2);
 			imsi.rotationVelocity = random(-0.01, 0.01);
 			this.particles.push(imsi);
@@ -147,7 +148,7 @@ let particleMgr = {
 		for(let i = 0; i < dataMgr.density.chem; i++){
 			let imsi = this.createParticle(particleTypes.chem);
 			imsi.position = initialPos.pop();
-			imsi.velocity = {x: this.size / 200 * random(-1, 1), y: this.size / 200 * random(-1, 1)};
+			imsi.velocity = {x: this.size / 200 * random(-1, 1) * velocity_factor, y: this.size / 200 * random(-1, 1) * velocity_factor};
 			imsi.rotation = random(0, 2);
 			imsi.rotationVelocity = random(-0.01, 0.01);
 			this.particles.push(imsi);
@@ -156,7 +157,7 @@ let particleMgr = {
 		for(let i = 0; i < dataMgr.density.dust; i++){
 			let imsi = this.createParticle(particleTypes.dust);
 			imsi.position = initialPos.pop();
-			imsi.velocity = {x: this.size / 200 * random(-1, 1), y: this.size / 200 * random(-1, 1)};
+			imsi.velocity = {x: this.size / 200 * random(-1, 1) * velocity_factor, y: this.size / 200 * random(-1, 1) * velocity_factor};
 			imsi.rotation = random(0, 2);
 			imsi.rotationVelocity = random(-0.01, 0.01);
 			this.particles.push(imsi);
@@ -751,16 +752,16 @@ let conditionMgr = {
 	
 	update(){
 		if(this.animTimer < 200) {
-			this.animTimer += 1 * 1.5;
+			this.animTimer += 2 * 1.5;
 		}
 
 		if(this.animTimer >= 200){
 			if(this.detail && this.animTimer2 < 100){
-				this.animTimer2 += 1;
+				this.animTimer2 += 2;
 			}
 	
 			if(!this.detail && this.animTimer2 > 0){
-				this.animTimer2 -= 1;
+				this.animTimer2 -= 2;
 			}
 		}
 	},
@@ -841,6 +842,7 @@ let outsideMgr = {
 function setup (){
 	createCanvas(windowWidth, windowHeight);
 	setInterval(refreshServer, 10000);
+	frameRate(30);
 	appMgr.initialize();
 	standardAnim.initialize();
 }
