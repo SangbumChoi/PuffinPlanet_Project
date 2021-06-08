@@ -87,7 +87,11 @@ let appMgr = {
 }
 
 var dataMgr = {
-	densityThres: 5,
+	threshold:{
+		co2: 5,
+		chem: 5,
+		dust: 5
+	},
 	density: {
 		co2: 6,
 		chem: 8,
@@ -98,9 +102,9 @@ var dataMgr = {
 		humidity: 30
 	},
 	realValue:{
-		co2:600,
-		chem:800,
-		dust:1
+		co2: 600,
+		chem: 800,
+		dust: 15
 	},
 	ventil: 24
 }
@@ -500,7 +504,7 @@ let particleMgr = {
 		noticeWidth = particleMgr.width * 0.75 * 0.25;
 		noticeHeight = particleMgr.width * 0.75 * 0.1 * 0.4;
 
-		if(dataMgr.density.co2 > dataMgr.densityThres){
+		if(dataMgr.density.co2 > dataMgr.threshold.co2){
 			/*if(dataMgr.ventil)*/ height += noticeHeight + noticeHeight / 5 * 2;
 			// else height += noticeHeight / 2;
 
@@ -521,7 +525,7 @@ let particleMgr = {
 			text("숨이 답답하지는 않으세요?", particleMgr.width / 2, height + noticeHeight / 16);
 		}
 
-		if(dataMgr.density.chem > dataMgr.densityThres){
+		if(dataMgr.density.chem > dataMgr.threshold.chem){
 			height += noticeHeight + noticeHeight / 5;
 
 			stroke(255, 255, 255);
@@ -542,7 +546,7 @@ let particleMgr = {
 			text("머리가 아프지는 않으세요?", particleMgr.width / 2, height + noticeHeight / 16);
 		}
 
-		if(dataMgr.density.dust > dataMgr.densityThres){
+		if(dataMgr.density.dust > dataMgr.threshold.dust){
 			height += noticeHeight + noticeHeight / 5;
 			
 			stroke(255, 255, 255);
@@ -859,19 +863,39 @@ function setup (){
 async function refreshServer() {
 	indoorData = await puffdata.getPuffData()
 	ventData = await puffdata.getVentLevelData()
+	outsideData = await puffdata.getOutsideWeather()
 
-	dataMgr.density.co2 = ~~(indoorData.co2 / 100)
-	dataMgr.density.chem = ~~(indoorData.voc / 100)
-	dataMgr.density.dust = indoorData.pm25
+	// dataMgr.density.co2 = ~~(indoorData.co2 / 100)
+	// dataMgr.density.chem = ~~(indoorData.voc / 100)
+	// dataMgr.density.dust = indoorData.pm25
+	if (indoorData != null && ventData != null){
+		dataMgr.realValue.co2 = indoorData.co2
+		dataMgr.realValue.chem = indoorData.voc
+		dataMgr.realValue.dust = indoorData.pm25
 
-	dataMgr.realValue.co2 = indoorData.co2
-	dataMgr.realValue.chem = indoorData.voc
-	dataMgr.realValue.dust = indoorData.pm25
+		dataMgr.condition.temperature = indoorData.temp.toFixed(1)
+		dataMgr.condition.humidity = indoorData.humid.toFixed(1)
 
-	dataMgr.condition.temperature = indoorData.temp.toFixed(1)
-	dataMgr.condition.humidity = indoorData.humid.toFixed(1)
+		dataMgr.ventil = ventData
 
-	dataMgr.ventil = ventData
+		mapData();
+	}
+}
+
+function mapData(){
+	dataMgr.density.co2 = ~~((dataMgr.realValue.co2 - 100) / 100);
+
+	// dust region
+	temp = dataMgr.realValue.dust;
+	if (temp >= 0 && temp < 105) dataMgr.density.dust = ~~(temp / 15);
+	else if (temp >= 105 && temp < 420) dataMgr.density.dust = ~~(temp / 105) + 6;
+	else dataMgr.density.dust = 10;
+
+	// chem region
+	temp = dataMgr.realValue.chem;
+	if (temp >=0 && temp < 50) dataMgr.density.chem = 0;
+	else if (temp >= 50 && temp < 275) dataMgr.density.chem = ~~(temp / 25) - 1;
+	else dataMgr.density.chem = 10;
 }
 
 var first = true
