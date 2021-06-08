@@ -834,6 +834,10 @@ let outsideMgr = {
 	
 	update(){
 
+	},
+
+	click(){
+
 	}
 }
 
