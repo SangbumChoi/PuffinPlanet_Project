@@ -14,6 +14,7 @@ let appMgr = {
 	drag : [],
 	dragIndex : 0,
 	prevMouseState: false,
+	isNewScreen3 : true,
 
 	addPage(page){
 		this.pages.push(page);
@@ -38,11 +39,17 @@ let appMgr = {
 
 	update(){
 		this.gesture();
-		this.pages[this.pageIndex].update();
+		if(this.pageIndex != 2) { this.pages[this.pageIndex].update(); }
 	},
 
 	draw(){
-		this.pages[this.pageIndex].draw();
+		if(this.pageIndex == 2){
+			this.isNewScreen3 ? this.pages[this.pageIndex].draw() : null ;
+			this.isNewScreen3 = false;
+		} else{
+			this.pages[this.pageIndex].draw();
+			this.isNewScreen3 = true;
+		}
 	},
 
 	gesture(){
@@ -844,7 +851,7 @@ let outsideMgr = {
 	},
 	
 	update(){
-
+		
 	},
 
 	click(){
@@ -904,7 +911,7 @@ async function draw(){
 		await refreshServer();
 		first = false;
 	}
-	background(255);
+	appMgr.pageIndex != 2 ||(appMgr.pageIndex == 2 && appMgr.isNewScreen3) ? background(255) : null;
 	appMgr.update();
 	appMgr.draw();
 }
