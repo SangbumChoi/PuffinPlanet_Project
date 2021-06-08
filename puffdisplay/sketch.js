@@ -816,15 +816,20 @@ let outsideMgr = {
 	start(){
 		picture_promise = weather.getWeather()
 		picture_promise.then(res => {
-			console.log(res)
-		// 	// img = loadImage(res)
-			img = loadImage('images/test02.jpg');
+			img_weather = loadImage(`images/${res[0]}.png`);
+			img_window = loadImage(`images/${res[1]}.png`);
+			img_temp = loadImage(`images/${res[2]}.png`);
+			img_umbrella = res[3] ? loadImage(`images/umbrella.png`) : null ;
+			img_mask = res[4] ? loadImage(`images/mask.png`) : null ;
 		})
-		img = loadImage('images/test02.jpg');
 	},
 
 	draw(){
-		image(img,0,0,windowWidth,windowHeight);
+		image(img_weather,0,0,windowWidth,windowHeight);
+		image(img_window,0,0,windowWidth,windowHeight);
+		image(img_temp,0,0,windowWidth,windowHeight);
+		img_umbrella ? image(img_umbrella,0,0,windowWidth,windowHeight) : null;
+		img_mask ? image(img_mask,0,0,windowWidth,windowHeight) : null;
 	},
 	
 	update(){

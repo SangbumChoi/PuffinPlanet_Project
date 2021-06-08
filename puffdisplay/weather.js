@@ -46,15 +46,30 @@ const weatherExample = {
 const APIKEY = '0f01c8681c49fabf70ec7845477e28e2'
 const url = `http://api.openweathermap.org/data/2.5/weather?q=seoul&appid=${APIKEY}`
 
+const sun_ = ['Atmosphere', 'Clear', 'Clouds']
+const rain_ = ['Thunderstorm', 'Drizzle', 'Rain']
+const snow_ = ['Snow']
+
+const dust_crieteria = 35
+const temp_criteria = 20
+
 async function getWeather () {
     let response = await fetch(url)
     let result = await response.json()
     var temp = result.main.temp
     var humidity = result.main.humidity
     var weather = result.weather[0].main
+    var dust = Math.random()*70 // To Do : Get dust concentration
+    
+    // picture selection logic 
+    var picWeather = (sun_.includes(weather)) ? 'sun' : (snow_.includes(weather) ? 'snow' : 'rain')
+    picWeather = (dust < dust_crieteria) ? picWeather : picWeather + '_dust';
+    var picWindow = (dust < dust_crieteria) ? 'window_open' : 'window_close'
+    var picTemp = (temp < temp_criteria + 273) ? 'cold' : 'hot'
+    var picIsUmbrella = (picWeather == 'rain')
+    var picIsMask = true
 
-    // To Do : picture selection logic 
-    var picture = 'sample'
+    var picture = [picWeather, picWindow, picTemp, picIsUmbrella, picIsMask]
     //
 
     return picture
