@@ -74,41 +74,8 @@ async function getVentLevelData () {
   }
 }
 
-async function getOutsideWeather() {
-  try{
-    let response = await fetch(
-      'https://clairynet-dev.com/graphql',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: `{
-            getTodayOutdoorAtmLogs(locationId: "5f3355fabf556f3fc5479f52"){
-              measurements{
-                logtime
-                temp
-                humid
-                pm25
-              }
-            }
-          }`
-        })
-      }
-    );
-    let result = await response.json();;
-    var ret = result.data.getTodayOutdoorAtmLogs.measurements.last();
-    return ret;
-  }
-  catch(err){
-    console.log(err);
-    return null;
-  }
-}
-
-
 module.exports = {
     getPuffData,
-    getVentLevelData,
-    getOutsideWeather
+    getVentLevelData
 }
 

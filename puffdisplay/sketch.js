@@ -870,11 +870,12 @@ function setup (){
 async function refreshServer() {
 	indoorData = await puffdata.getPuffData()
 	ventData = await puffdata.getVentLevelData()
-	outsideData = await puffdata.getOutsideWeather()
+	// outsideData = await puffdata.getOutsideWeather()
 
 	// dataMgr.density.co2 = ~~(indoorData.co2 / 100)
 	// dataMgr.density.chem = ~~(indoorData.voc / 100)
 	// dataMgr.density.dust = indoorData.pm25
+	
 	if (indoorData != null && ventData != null){
 		dataMgr.realValue.co2 = indoorData.co2
 		dataMgr.realValue.chem = indoorData.voc
